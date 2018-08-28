@@ -6,21 +6,26 @@ import urllib
 import requests
 import argparse
 import turtle
+import time
 
 def find_astronauts():
     r = requests.get("http://api.open-notify.org/astros.json")
     return r.json()
 
+def indy_time():
+    coords = {'lat': 39.7684, 'lon': -86.1581}
+    r = requests.get("http://api.open-notify.org/iss-pass.json", params=coords)
+    t = time.ctime(r.json()['response'][0]['risetime'])
+    return t
+
 
 def find_iss():
-    r = requests.get("http://api.open-notify.org/iss-now.json")
+    r = requests.get("http://api.open-notify.org/iss-now.json",)
     iss_info = r.json()
     # iss_timestamp = iss_info['timestamp']
     iss_position = iss_info['iss_position']
     iss_longitude = iss_position['longitude']
     iss_latitude = iss_position['latitude']
-
-    # print iss_timestamp, iss_longitude, iss_latitude
 
     screen = turtle.Screen()
     screen.setup(720,360)
@@ -33,15 +38,17 @@ def find_iss():
     t.setheading(90)
 
     t.penup()
-    t.goto(iss_longitude, iss_latitude)
+    t.goto(float(iss_longitude), float(iss_latitude))
 
-    # location = turtle.Turtle()
-    # location.penup()
-    # location.color('yellow')
-    # location.goto(22,55)
-    # location.dot(5)
-    # location.hideturtle()
-    # turtle.done()
+    location = turtle.Turtle()
+    location.penup()
+    location.color('yellow')
+    location.goto(-86.1581, 39.7684)
+    location.shape('circle')
+    location.resizemode('user')
+    location.shapesize(0.2)
+    location.write(indy_time())
+    screen.exitonclick() 
 
 
 def create_parser():
@@ -50,7 +57,7 @@ def create_parser():
     parser.add_argument('-a','--astros',
                         help='finds astronauts')
     parser.add_argument('-i','--iss',
-                        help='finds iss')
+                        help='finds iss',)
     return parser
 
 
